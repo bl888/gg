@@ -1,7 +1,7 @@
 # shopify-monitor
 Monitor for Shopify based brands
 
-![term](http://i.imgur.com/baiwk9f.png)
+![term](http://i.imgur.com/baiwk9f.png
 
 ### Installation
 
