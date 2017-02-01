@@ -1,0 +1,62 @@
+{
+    "interval": 28000,
+    "serverPort": 1337,
+    "autoRetryOnCrash": true,
+    "noImageURL": "http://i.imgur.com/MdsG0Po.png",
+    "notify": {
+        "new": true,
+        "restocks": true,
+        "keywords": true
+    },
+    "slackBot": {
+        "active": true,
+        "token": "xoxb-133378359732-x8yoM5E1TX13NXV9e0kVdm0a",
+        "channel": "cookify",
+        "settings": {
+            "username": "cooknotify",
+            "icon_url": "https://img.clipartfest.com/ec85151651ea4ae55f473ed86e55a5a9_chef-clipart-chef-clipart-png_900-902.png"
+        }
+    },
+    "twitter": {
+        "active": true,
+        "encodeImages": false,
+        "consumer_key": "IeXYd8FOt7udmUicgrEgKoCQL",
+        "consumer_secret": "J0t80r2bYlGNhUqg7Wu2vVkY0oHngVnPlGmdCOmeX7QI3WWyrm",
+        "access_token": "823769663561568256-GcQmJzyzyAVeAXiC2XFbsiOMd6s8ZOz",
+        "access_token_secret": "KoGcLPyTRk9SUoTxGgesNK5QsgztRWIwrFc6OGbjAFB9Z"
+    },
+    "sites": [
+        "http://kithnyc.com/sitemap_products_1.xml",
+        "https://shop.exclucitylife.com/sitemap_products_1.xml",
+        "https://www.oneness287.com/sitemap_products_1.xml",
+        "https://offthehook.ca/sitemap_products_1.xml",
+        "http://www.deadstock.ca/sitemap_products_1.xml",
+        "http://shopnicekicks.com/sitemap_products_1.xml",
+        "https://samtabak.com/sitemap_products_1.xml",
+        "https://shop.bdgastore.com/sitemap_products_1.xml",
+        "https://www.solestop.com/sitemap_products_1.xml",
+        "http://www.capsuletoronto.com/sitemap_products_1.xml",
+        "https://www.ssense.com/sitemap_products_1.xml",
+        "https://www.theclosetinc.com/sitemap_products_1.xml"
+    ],
+    "keywords": [
+        "nmd",
+        "ultraboost",
+        "yeezy",
+        "nmd",
+        "consortium",
+        "ub-mid",
+        "air-jordan",
+        "jordan-retro",
+        "eqt",
+        "adidas",
+        "nike",
+        "boost",
+        "350",
+        "LeBron",
+        "yzy",
+        "bred",
+        "v2",
+        "ub"
+    ]
+}
