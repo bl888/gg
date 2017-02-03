@@ -12,7 +12,7 @@ shopify-monitor requires [Node.js](http://nodejs.org/).
 Setup:
 
 ```sh
-$ git clone https://github.com/dzt/shopify-monitor.git
+$ git clone https://github.com/yeezyszn8/cook.git
 $ cd shopify-monitor
 $ npm install
 ```
