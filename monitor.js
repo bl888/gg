@@ -8,31 +8,31 @@ const lib = require('./lib')
 const app = express()
 
 function scheduleGc() {
-  if (!global.gc) {
-    console.log('Garbage collection is not exposed');
-    return;
-  }
+    if (!global.gc) {
+        console.log('Garbage collection is not exposed');
+        return;
+    }
 
-  // schedule next gc within a random interval (e.g. 15-45 minutes)
-  // tweak this based on your app's memory usage
-  var nextMinutes = Math.random() * 30 + 15;
+    // schedule next gc within a random interval (e.g. 15-45 minutes)
+    // tweak this based on your app's memory usage
+    var nextMinutes = Math.random() * 30 + 15;
 
-  setTimeout(function(){
-    global.gc();
-    console.log('Manual gc', process.memoryUsage());
-    scheduleGc();
-  }, nextMinutes * 60 * 1000);
+    setTimeout(function() {
+        global.gc();
+        console.log('Manual gc', process.memoryUsage());
+        scheduleGc();
+    }, nextMinutes * 60 * 1000);
 }
 
 // call this in the startup script of your app (once per process)
 scheduleGc();
 
-try {
-    var configuration = require('./config.json');
-} catch (e) {
-    api.log('error', 'Missing, config.json file or invalid json syntax.')
-    return process.exit()
-}
+    try {
+        var configuration = require('./config.json');
+    } catch (e) {
+        api.log('error', 'Missing, config.json file or invalid json syntax.')
+        return process.exit()
+    }
 
 const request = require('request').defaults({
     timeout: 30000
@@ -198,10 +198,21 @@ function seek() {
                         var parsedResult = JSON.parse(result)
                         var productToCompare = parsedResult.name.toLowerCase()
                         if (productToCompare.indexOf(configuration.keywords[x].toLowerCase()) > -1) {
+
                             var possibleMatch = _.where(matches, parsedResult)
-                            // checks if its already found that match before
+
+                            // checks if its already found that match before and if not it pushes it to slack or whatever
                             if (possibleMatch.length === 0) {
-                                matches.push(parsedResult);
+
+                                var newMatch = parsedResult
+                                lib.getStockData(parsedResult.link, (res, err) => {
+                                    if (err) {
+                                        api.log('error', `Error occured while fetching stock data from ${parsedResult.link}`)
+                                    }
+                                    newMatch.stock = res.stock
+                                    matches.push(newMatch)
+                                })
+
                                 if (pickupFirst === false) {
                                     // does nothing
                                     //api.log('success', `Match Found:\nProduct Name: "${parsedResult.name}"\nLink: ${parsedResult.link}\n`)
@@ -210,6 +221,43 @@ function seek() {
                                     slackNotification(parsedResult, '#F48FB1', 'Keyword Match')
                                     twitterNotification(parsedResult, 'match')
                                 }
+                            } else {
+                                var possibleRestock = _.findWhere(matches, {
+                                    name: parsedResult.name,
+                                    brand: parsedResult.brand
+                                });
+
+                                if (possibleRestock === undefined) {
+                                    // do nothing
+                                } else {
+                                    // compare stock
+                                    if (possibleRestock.stock === 'Unavailable') {
+
+                                    } else {
+                                        if (possibleRestock.stock === 0) {
+                                            // find match stock
+                                            lib.getStockData(parsedResult.link, (res, err) => {
+                                                if (err) {
+                                                    api.log('error', `Error occured while fetching stock data from ${parsedResult.link}`)
+                                                }
+                                                if (Number.isInteger(res.stock)) {
+                                                    if (res.stock > 0) {
+
+                                                        var newRestock = parsedResult
+                                                        console.log('splicing')
+                                                        matches.splice(matches.indexOf(possibleRestock), 1);
+                                                        newRestock.stock = res.stock
+                                                        matches.push(newRestock)
+
+                                                        slackNotification(parsedResult, '#4FC3F7', 'Restock')
+                                                        twitterNotification(parsedResult, 'restock')
+                                                    }
+                                                }
+                                            })
+                                        }
+                                    }
+                                }
+
                             }
                         }
                     })
@@ -326,8 +374,8 @@ function seek() {
             }
 
         })
-        var endSeek = +new Date();
-        api.log('success', `Interval completion time: ${endSeek-startSeek}ms`)
+        // var endSeek = +new Date();
+        //api.log('success', `Interval completion time: ${endSeek-startSeek}ms`)
     }, configuration.interval);
 }
 
@@ -436,6 +484,10 @@ function twitterNotification(parsedResult, type) {
 
             if (type === 'match') {
                 var altText = `${name}\n${price}\nStock Count: ${stock}\n${url}`
+            }
+
+            if (type === 'restock') {
+                var altText = `Restock:\n${name}\n${price}\nStock Count: ${stock}\n${url}`
             }
 
             if (configuration.twitter.encodeImages) {
